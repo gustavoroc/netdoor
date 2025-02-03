@@ -1,4 +1,6 @@
-﻿namespace AuthService.DTOs
+﻿using AuthService.Models;
+
+namespace AuthService.DTOs
 {
     public class GroupDto
     {

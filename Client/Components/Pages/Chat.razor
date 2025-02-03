@@ -1,0 +1,100 @@
+﻿@page "/chat/{GroupId}"
+
+@using Client.Models
+@using Client.Services
+
+@implements IAsyncDisposable
+@inject ChatService ChatService
+
+<div class="container">
+    <div class="row">
+        <div class="col-12">
+            <div class="chat-container">
+                <div class="messages">
+                    @foreach (var message in messages)
+                    {
+                        <div class="message">
+                            <small class="text-muted">@message.Timestamp.ToString("HH:mm")</small>
+                            <strong>@message.User:</strong> @message.Message
+                        </div>
+                    }
+                </div>
+                <div class="input-container">
+                    <EditForm Model="@newMessage" OnValidSubmit="SendMessage">
+                        <div class="input-group">
+                            <InputText @bind-Value="newMessage" class="form-control" />
+                            <button type="submit" class="btn btn-primary">Send</button>
+                        </div>
+                    </EditForm>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .chat-container {
+        display: flex;
+        flex-direction: column;
+        height: 80vh;
+    }
+
+    .messages {
+        flex-grow: 1;
+        overflow-y: auto;
+        padding: 1rem;
+        background-color: #f8f9fa;
+        border-radius: 0.25rem;
+        margin-bottom: 1rem;
+    }
+
+    .message {
+        margin-bottom: 0.5rem;
+    }
+
+    .input-container {
+        padding: 1rem;
+        background-color: #fff;
+        border-top: 1px solid #dee2e6;
+    }
+</style>
+
+@code {
+    [Parameter]
+    public string GroupId { get; set; }
+
+    private string newMessage = "";
+    private List<ChatMessage> messages = new();
+    private readonly ChatService _chatService;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _chatService.OnMessageReceived += HandleMessageReceived;
+        await _chatService.JoinGroup(GroupId);
+    }
+
+    private async Task SendMessage()
+    {
+        if (!string.IsNullOrWhiteSpace(newMessage))
+        {
+            await _chatService.SendMessage(GroupId, newMessage);
+            newMessage = "";
+        }
+    }
+
+    private void HandleMessageReceived(string message)
+    {
+        var chatMessage = new ChatMessage
+            {
+                Message = message,
+                Timestamp = DateTime.Now
+            };
+        messages.Add(chatMessage);
+        StateHasChanged();
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        _chatService.OnMessageReceived -= HandleMessageReceived;
+    }
+}

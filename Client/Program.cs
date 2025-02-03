@@ -1,10 +1,15 @@
 using Client.Components;
+using Client.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
+
+builder.Services.AddScoped<ChatService>();
+builder.Services.AddScoped<AuthService>();
+builder.Services.AddScoped<HttpClient>();
 
 var app = builder.Build();
 

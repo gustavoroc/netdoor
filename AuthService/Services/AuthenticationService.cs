@@ -7,13 +7,13 @@ using System.Text;
 
 namespace AuthService.Services
 {
-    public class AuthService : IAuthService
+    public class AuthenticationService
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly IConfiguration _configuration;
 
-        public AuthService(
+        public AuthenticationService(
             UserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager,
             IConfiguration configuration)

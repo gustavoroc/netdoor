@@ -8,9 +8,9 @@ namespace AuthService.Controllers
     [Route("api/[controller]")]
     public class AuthController : ControllerBase
     {
-        private readonly IAuthService _authService;
+        private readonly AuthenticationService _authService;
 
-        public AuthController(IAuthService authService)
+        public AuthController(AuthenticationService authService)
         {
             _authService = authService;
         }

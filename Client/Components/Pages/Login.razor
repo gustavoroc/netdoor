@@ -1,0 +1,62 @@
+﻿@page "/login"
+
+@using Client.Models
+@using Client.Services
+
+@inject AuthService AuthService
+@inject NavigationManager NavigationManager
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card mt-5">
+                <div class="card-body">
+                    <h3 class="card-title text-center">Login</h3>
+
+                    <EditForm Model="@Model" OnValidSubmit="HandleLogin" FormName="loginForm">
+
+                        <DataAnnotationsValidator />
+                        <ValidationSummary />
+
+                        <div class="form-group">
+                            <label>Email</label>
+                            <InputText @bind-Value="Model.Email" class="form-control" />
+                            <ValidationMessage For="@(() => Model.Email)" />
+                        </div>
+
+                        <div class="form-group mt-3">
+                            <label>Password</label>
+                            <InputText type="password" @bind-Value="Model.Password" class="form-control" />
+                            <ValidationMessage For="@(() => Model.Password)" />
+                        </div>
+
+                        <button type="submit" class="btn btn-primary w-100 mt-4">Login</button>
+                    </EditForm>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    [SupplyParameterFromForm]
+    private LoginModel? Model { get; set; }
+
+    protected override void OnInitialized() => Model ??= new();
+
+    private async Task HandleLogin()
+    {
+        Console.WriteLine($"Attempting login with email: {Model.Email}");
+        var res = await AuthService.Login(Model);
+        if (res)
+        {
+            NavigationManager.NavigateTo("/groups");
+        }
+        else
+        {
+            // Aqui você pode adicionar uma mensagem de erro para o usuário
+            Console.WriteLine("Login failed");
+        }
+    }
+}
